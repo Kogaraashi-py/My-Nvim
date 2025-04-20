@@ -1,56 +1,84 @@
 -- ~/.config/nvim/after/plugin/keymaps.lua
--- Keymaps para módulos de 'mini.nvim'
-vim.keymap.set("n", "<leader>e", function()
-	require("mini.files").open(vim.fn.getcwd(), true) -- Abre el explorador
-end, { desc = "Explorer" })
 
--- ~/.config/nvim/after/plugin/keymaps.lua
-vim.keymap.set("n", "<leader>p", function()
-	require("mini.pick").builtin.files({ tool = "fd" }) -- Usa 'fd' para búsqueda
-end, { desc = "Fuzzy Find" })
+local km = vim.keymap
+local fzf = require("fzf-lua")
+local actions = fzf.actions
+local bufdel = require("bufdelete")
 
-vim.keymap.set("n", "<leader>bd", function()
-	require("mini.bufremove").delete() -- Cierra el buffer
-end, { desc = "Close Buffer" })
+-- ──────────────────────────────────────────────────────────────────────────────
+-- fzf-lua: Files & Search
+-- ──────────────────────────────────────────────────────────────────────────────
+km.set("n", "<leader>p", fzf.files, { desc = "FZF Files" }) -- :contentReference[oaicite:0]{index=0}
+km.set("n", "<leader>ff", fzf.live_grep, { desc = "FZF Grep" }) -- :contentReference[oaicite:1]{index=1}
+km.set("v", "<leader>8", fzf.grep_visual, { desc = "FZF Selection" }) -- :contentReference[oaicite:2]{index=2}
+km.set("n", "<leader>7", fzf.grep_cword, { desc = "FZF Word" }) -- :contentReference[oaicite:3]{index=3}
+km.set("n", "<leader>j", fzf.helptags, { desc = "Help Tags" }) -- :contentReference[oaicite:4]{index=4}
+km.set("n", "<leader><leader>", fzf.resume, { desc = "FZF Resume" }) -- :contentReference[oaicite:5]{index=5}
 
-vim.keymap.set("n", "<leader>gm", function()
-	require("mini.git").stage_hunk() -- Stage hunk de Git
-end, { desc = "Stage Hunk" })
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Buffers: listar, y delete sin romper layout
+-- ──────────────────────────────────────────────────────────────────────────────
+km.set("n", "<leader>b", fzf.buffers, { desc = "FZF Buffers" }) -- :contentReference[oaicite:6]{index=6}
+km.set("n", "<leader>d", function() -- bufdelete.nvim: borra buffer actual
+	bufdel.bufdelete(0, false) -- :contentReference[oaicite:7]{index=7}
+end, { silent = true, desc = "Buffer Delete" })
 
--- after/plugin/keymaps.lua
--- after/plugin/keymaps.lua
-vim.keymap.set("n", "<leader>b", function()
-	require("mini.pick").builtin.buffers()
-end, { desc = "List buffers" })
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Git: commits y ramas
+-- ──────────────────────────────────────────────────────────────────────────────
+km.set("n", "<leader>gc", fzf.git_commits, { desc = "Git Commits (repo)" }) -- :contentReference[oaicite:8]{index=8}
+km.set("n", "<leader>gbc", fzf.git_bcommits, { desc = "Git Commits (buffer)" }) -- :contentReference[oaicite:9]{index=9}
+km.set("n", "<leader>gs", fzf.git_status, { desc = "Git Status" }) -- :contentReference[oaicite:10]{index=10}
 
--- Agrega este nuevo keymap para una función personalizada de eliminación de buffers
-vim.keymap.set("n", "<leader>bk", function()
-	-- Obtener lista de buffers
-	local buffers = vim.api.nvim_list_bufs()
-	local valid_buffers = {}
-	local buffer_names = {}
+-- Ramas: por defecto hace checkout; añadimos acción para borrar
+km.set("n", "<leader>gb", function()
+	fzf.git_branches({ -- :contentReference[oaicite:11]{index=11}
+		actions = {
+			["default"] = actions.git_switch, -- hacer checkout de la rama
+			["delete"] = actions.git_branch_delete, -- borrar la rama
+		},
+	})
+end, { desc = "Git Branches (switch/delete)" })
 
-	-- Filtrar buffers válidos y obtener nombres
-	for _, buf_id in ipairs(buffers) do
-		if vim.api.nvim_buf_is_valid(buf_id) and vim.bo[buf_id].buflisted then
-			table.insert(valid_buffers, buf_id)
-			local name = vim.api.nvim_buf_get_name(buf_id)
-			name = name == "" and "[No Name]" or vim.fn.fnamemodify(name, ":t")
-			table.insert(buffer_names, name)
-		end
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Operaciones de ficheros: crear, renombrar, eliminar
+-- ──────────────────────────────────────────────────────────────────────────────
+--  Crear nuevo archivo y abrirlo
+km.set("n", "<leader>n", function()
+	local fname = vim.fn.input("New file: ", "", "file")
+	if fname ~= "" then
+		vim.cmd("edit " .. fname)
 	end
+end, { desc = "New File" })
 
-	-- Usar vim.ui.select para mostrar una lista de buffers
-	vim.ui.select(buffer_names, {
-		prompt = "Selecciona buffer para eliminar:",
-		format_item = function(item)
-			return item
-		end,
-	}, function(selected_name, idx)
-		if selected_name then
-			-- Eliminar el buffer seleccionado
-			local buf_id = valid_buffers[idx]
-			require("mini.bufremove").delete(buf_id, false)
-		end
-	end)
-end, { desc = "Delete buffer from list" })
+--  Renombrar archivo actual
+km.set("n", "<leader>r", function()
+	local old = vim.fn.expand("%:p")
+	local new = vim.fn.input("Rename to: ", old, "file")
+	if new ~= "" and new ~= old then
+		os.rename(old, new) -- :contentReference[oaicite:12]{index=12}
+		vim.cmd("edit " .. new)
+	end
+end, { desc = "Rename File" })
+
+--  Eliminar archivo actual
+km.set("n", "<leader>x", function()
+	local file = vim.fn.expand("%:p")
+	if vim.fn.input("Delete file? (y/N): ") == "y" then
+		os.remove(file) -- :contentReference[oaicite:13]{index=13}
+		bufdel.bufdelete(0, true)
+	end
+end, { desc = "Delete File" })
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Ventanas: navegación y resize
+-- ──────────────────────────────────────────────────────────────────────────────
+km.set("n", "<Leader><Down>", "<C-W><C-J>", { silent = true, desc = "Window Down" })
+km.set("n", "<Leader><Up>", "<C-W><C-K>", { silent = true, desc = "Window Up" })
+km.set("n", "<Leader><Right>", "<C-W><C-L>", { silent = true, desc = "Window Right" })
+km.set("n", "<Leader><Left>", "<C-W><C-H>", { silent = true, desc = "Window Left" })
+km.set("n", "<Leader>wr", "<C-W>R", { silent = true, desc = "Window Swap" })
+km.set("n", "<Leader>=", "<C-W>=", { silent = true, desc = "Window Equalise" })
+for i = 1, 4 do
+	km.set("n", "<Leader>" .. i, i .. "<C-W>w", { desc = "Move to Window " .. i })
+end

@@ -1,14 +1,14 @@
 -- config/init.lua
 return {
 	-- Plugin de Telescope
-	{
-		"nvim-telescope/telescope.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		config = function()
-			require("telescope").setup()
-			vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find Files" })
-		end,
-	},
+	--	{
+	--		"nvim-telescope/telescope.nvim",
+	--		dependencies = { "nvim-lua/plenary.nvim" },
+	--		config = function()
+	--			require("telescope").setup()
+	--			vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find Files" })
+	--		end,
+	--	},
 
 	-- Configuración LSP (carga todo de config/lsp/init.lua)
 	{

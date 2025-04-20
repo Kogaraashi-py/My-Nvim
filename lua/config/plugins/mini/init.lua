@@ -9,19 +9,19 @@ function M.setup()
 	require("mini.comment").setup()
 
 	-- 2) Workflow / navegación
-	require("mini.files").setup(require("config.plugins.mini.files"))
+	--require("mini.files").setup(require("config.plugins.mini.files"))
 
-	require("mini.bufremove").setup()
+	--require("mini.bufremove").setup()
 
 	-- lua/config/plugins/mini.lua (dentro de M.setup())
-	require("mini.pick").setup(require("config.plugins.mini.pick"))
+	--require("mini.pick").setup(require("config.plugins.mini.pick"))
 
 	-- 3) Git inline
-	require("mini.git").setup()
+	--require("mini.git").setup()
 
 	-- 4) Apariencia
 	require("mini.statusline").setup()
-	require("mini.icons").setup()
+	--require("mini.icons").setup()
 	require("mini.indentscope").setup()
 end
 
