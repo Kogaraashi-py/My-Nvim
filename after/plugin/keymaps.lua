@@ -1,9 +1,12 @@
 -- ~/.config/nvim/after/plugin/keymaps.lua
-
+local vim = vim
 local km = vim.keymap
 local fzf = require("fzf-lua")
 local actions = fzf.actions
 local bufdel = require("bufdelete")
+
+local map = vim.keymap.set
+local opts = { silent = true, noremap = true }
 
 fzf.setup({
 	winopts = {
@@ -18,7 +21,9 @@ fzf.setup({
 -- fzf-lua: Files & Search
 -- ──────────────────────────────────────────────────────────────────────────────
 km.set("n", "<leader>p", fzf.files, { desc = "FZF Files" }) -- :contentReference[oaicite:0]{index=0}
+
 km.set("n", "<leader>fe", fzf.live_grep, { desc = "FZF Grep" }) -- :contentReference[oaicite:1]{index=1}
+
 km.set("v", "<leader>8", function()
 	fzf.grep_visual({ preview = true })
 end, { desc = "FZF Grep Selection" })
@@ -131,4 +136,41 @@ km.set("n", "<leader>re", function()
 	fzf.registers({ preview = true })
 end, { desc = "FZF Registers" }) -- registros internos :contentReference[oaicite:11]{index=16}
 
-vim.keymap.set("n", "-", "<cmd>Oil --float<CR>", { desc = "Open Parent Directory in Oil" }) -- abre oil :contentReference[oaicite:11]{index=17}
+km.set("n", "-", "<cmd>Oil --float<CR>", { desc = "Open Parent Directory in Oil" }) -- abre oil :contentReference[oaicite:11]{index=17}
+
+km.set("n", "<leader>9", function()
+	vim.ui.input({
+		prompt = "Introduce un directorio: ",
+		completion = "dir",
+	}, function(input)
+		if input then
+			local dir = vim.fs.normalize(input)
+			local stat = vim.uv.fs_stat(dir)
+			if stat and stat.type == "directory" then
+				require("fzf-lua").files({ cwd = dir })
+			else
+				print("Directorio inválido.")
+			end
+		end
+	end)
+end)
+-- lua/keymaps.lua (o donde guardes tus mapeos)
+
+-- 1) Guardar como sudo (modo comando)
+-- Equivalente a: cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
+map(
+	"c", -- modo: 'c' = command‑line
+	"w!!", -- lhs: lo que escribes
+	"execute 'silent! write !sudo tee % >/dev/null' <bar> edit!", -- rhs: lo que hace
+	vim.tbl_extend("force", opts, { desc = "Guardar con sudo" })
+)
+
+-- 2) Copiar al portapapeles del sistema (normal y visual)
+-- Usamos el registro '+' (clipboard) de Vim
+
+map(
+	{ "n", "v" }, -- modos: 'n' = normal, 'v' = visual
+	"<leader>yc", -- lhs: <leader>yc
+	'"+y', -- rhs: '"+y' = yank al registro +
+	vim.tbl_extend("force", opts, { desc = "Yank to system clipboard" })
+)
