@@ -18,13 +18,20 @@ fzf.setup({
 -- fzf-lua: Files & Search
 -- ──────────────────────────────────────────────────────────────────────────────
 km.set("n", "<leader>p", fzf.files, { desc = "FZF Files" }) -- :contentReference[oaicite:0]{index=0}
-km.set("n", "<leader>ff", fzf.live_grep, { desc = "FZF Grep" }) -- :contentReference[oaicite:1]{index=1}
+km.set("n", "<leader>fe", fzf.live_grep, { desc = "FZF Grep" }) -- :contentReference[oaicite:1]{index=1}
 km.set("v", "<leader>8", function()
 	fzf.grep_visual({ preview = true })
 end, { desc = "FZF Grep Selection" })
 km.set("n", "<leader>7", fzf.grep_cword, { desc = "FZF Word" }) -- :contentReference[oaicite:3]{index=3}
 km.set("n", "<leader>j", fzf.helptags, { desc = "Help Tags" }) -- :contentReference[oaicite:4]{index=4}
 km.set("n", "<leader><leader>", fzf.resume, { desc = "FZF Resume" }) -- :contentReference[oaicite:5]{index=5}
+km.set("n", "<leader>h", fzf.command_history, { desc = "Command history" }) -- :contentReference[oaicite:5]{index=5}
+km.set("n", "<leader>l", function()
+	require("fzf-lua").files({
+		cwd = vim.fn.getcwd(), -- establece el directorio actual como raíz
+		preview = true, -- mantiene la vista previa activada
+	})
+end, { desc = "FZF Files (cwd)" })
 
 -- ──────────────────────────────────────────────────────────────────────────────
 -- Buffers: listar, y delete sin romper layout
@@ -118,8 +125,10 @@ end, { desc = "Spelling Suggestions" }) -- sugerencias ortográficas :contentRef
 
 km.set("n", "<leader>k", function()
 	fzf.keymaps({ preview = true })
-end, { desc = "FZF Keymaps" }) -- mapea tus mappings :contentReference[oaicite:13]{index=13}
+end, { desc = "FZF Keymaps" }) -- mapea tus mappings :contentReference[oaicite:13]{index=15}
 
 km.set("n", "<leader>re", function()
 	fzf.registers({ preview = true })
-end, { desc = "FZF Registers" }) -- registros internos :contentReference[oaicite:11]{index=11}
+end, { desc = "FZF Registers" }) -- registros internos :contentReference[oaicite:11]{index=16}
+
+vim.keymap.set("n", "-", "<cmd>Oil --float<CR>", { desc = "Open Parent Directory in Oil" }) -- abre oil :contentReference[oaicite:11]{index=17}

@@ -28,9 +28,9 @@ require("lazy").setup({
 		{ import = "plugins" }, -- Carga plugins/init.lua
 		{ import = "plugins.colorscheme" }, -- Carga el tema
 	},
-	install = {
-		colorscheme = { "catppuccin" }, -- Cambia habamax por catppuccin
-	},
+	--install = {
+	--colorscheme = { "catppuccin" }, -- Cambia habamax por catppuccin
+	--},
 	rocks = { enabled = false },
 	checker = { enabled = true },
 })
