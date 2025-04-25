@@ -17,3 +17,14 @@
 --vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#9370DB", bold = true }) -- Número morado
 --vim.api.nvim_set_hl(0, "CursorLine", { bg = "#303030", blend = 20 }) -- Línea gris oscura
 --vim.api.nvim_set_hl(0, "CursorColumn", { bg = "#443322", blend = 25 }) -- Columna marrón compatible con Capuchin
+
+-- Crea un autocomando que se active al guardar cualquier archivo
+vim.api.nvim_create_autocmd("BufWritePost", {
+	pattern = "*",
+	callback = function()
+		-- Obtiene el nombre del archivo actual
+		local filename = vim.fn.expand("%:t")
+		-- Muestra una notificación
+		vim.notify("¡Archivo " .. filename .. " guardado con éxito!", vim.log.levels.INFO)
+	end,
+})
