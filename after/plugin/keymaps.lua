@@ -5,6 +5,7 @@ local fzf = require("fzf-lua")
 local actions = fzf.actions
 local bufdel = require("bufdelete")
 
+local wiki_path = vim.fn.expand("~/vimwiki")
 local map = vim.keymap.set
 local opts = { silent = true, noremap = true }
 
@@ -79,12 +80,6 @@ end, { desc = "Git Create Branch" })
 -- Operaciones de ficheros: crear, renombrar, eliminar
 -- ──────────────────────────────────────────────────────────────────────────────
 --  Crear nuevo archivo y abrirlo
-km.set("n", "<leader>n", function()
-	local fname = vim.fn.input("New file: ", "", "file")
-	if fname ~= "" then
-		vim.cmd("edit " .. fname)
-	end
-end, { desc = "New File" })
 
 --  Renombrar archivo actual
 km.set("n", "<leader>r", function()
@@ -174,3 +169,13 @@ map(
 	'"+y', -- rhs: '"+y' = yank al registro +
 	vim.tbl_extend("force", opts, { desc = "Yank to system clipboard" })
 )
+
+-- Mapea la búsqueda de archivos de wiki
+vim.keymap.set("n", "<Leader>ew", function()
+	require("fzf-lua").files({ cwd = wiki_path })
+end, { desc = "Buscar páginas de VimWiki" })
+
+-- Mapea la búsqueda de contenido de wiki
+vim.keymap.set("n", "<Leader>fg", function()
+	require("fzf-lua").live_grep({ cwd = wiki_path })
+end, { desc = "Buscar contenido en VimWiki" })
