@@ -13,6 +13,7 @@ return {
 	-- Configuración LSP (carga todo de config/lsp/init.lua)
 	{
 		"neovim/nvim-lspconfig",
+		event = { "BufReadPre", "BufNewFile" }, --optimizacion,cargar solo cuando se abra un archivo
 		dependencies = {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
