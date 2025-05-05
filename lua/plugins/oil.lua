@@ -1,6 +1,5 @@
 return {
 	"stevearc/oil.nvim",
-	cmd = "Oil", -- Cargar solo cuando se invoca el comando
 	opts = {},
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()
