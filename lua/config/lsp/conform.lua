@@ -2,23 +2,32 @@
 local M = {}
 
 M.setup = function()
-	require("conform").setup({
-		-- Si quieres que SOLO corra el primer formateador útil:
-		stop_after_first = true,
+  require("conform").setup({
+    stop_after_first = true,
+    format_on_save = {
+      timeout_ms = 2000,
+      lsp_fallback = true,
+    },
+    formatters_by_ft = {
+      -- Lenguajes backend/scripting
+      python = { "black" },
+      lua = { "stylua" },
+      go = { "gofmt", "goimports" },
+      bash = { "shfmt" },
+      zsh = { "shfmt" },
 
-		format_on_save = {
-			timeout_ms = 2000,
-			lsp_fallback = true,
-		},
-
-		formatters_by_ft = {
-			python = { "black" }, -- ya no va anidado
-			lua = { "stylua" },
-			go = { "gofmt", "goimports" },
-			bash = { "shfmt" },
-			zsh = { "shfmt" },
-		},
-	})
+      -- ✅ Web/Frontend (agregado)
+      javascript = { "prettier" },
+      javascriptreact = { "prettier" },
+      typescript = { "prettier" },
+      typescriptreact = { "prettier" },
+      json = { "prettier" },
+      html = { "prettier" },
+      css = { "prettier" },
+      scss = { "prettier" },
+      markdown = { "prettier" },
+    },
+  })
 end
 
 return M
