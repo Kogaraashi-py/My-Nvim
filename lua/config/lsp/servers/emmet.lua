@@ -1,25 +1,21 @@
 local M = {}
 
 M.setup = function(on_attach, capabilities)
-  -- ✅ Configurar bashls
-  vim.lsp.config("bashls", {
+  vim.lsp.config("emmet_ls", {
     capabilities = capabilities,
-    filetypes = { "sh", "bash" }, -- Separamos bash de zsh
-    root_markers = { ".git" },
+    filetypes = { "html", "css", "javascriptreact", "typescriptreact" },
   })
 
-  -- ✅ Configurar on_attach
   vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
       local client = vim.lsp.get_client_by_id(args.data.client_id)
-      if client and client.name == "bashls" then
+      if client and client.name == "emmet_ls" then
         on_attach(client, args.buf)
       end
     end,
   })
 
-  -- ✅ Habilitar el servidor
-  vim.lsp.enable("bashls")
+  vim.lsp.enable("emmet_ls")
 end
 
 return M
